@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='styles_login.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<html>
+<head>
+    <title>Narrative Analysis</title>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-content fade-in-element">
+            <div class="login-app-heading">
+                <img class="login-app-logo" src="{{ url_for('static', filename='favicon.ico') }}" alt="Logo">
+                <h1 class="login-app-name">{{annotation_title}}</h1>
+            </div>
+
+            <form action="{{ url_for('login.welcome') }}" method="post">
+                <div class="login-form-group">
+                    <input type="email" id="email" name="email" placeholder="Log in with your email" required>
+                </div>
+                <div class="login-form-group">
+                    <button type="submit">Start</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.fade-in-element').addClass('visible');
+            }, 1000); // 1 second
+        });
+    </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>First page</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='first_page_styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome {{ email }}</h1>
+        <div class="box">
+            <form method="POST" action="{{ url_for('login.start_annotation', email=email) }}">
+                <button type="submit" name="action" value="new" class="submit">Go to First Text</button>
+            </form>
+            <div class="button-spacing"></div> <!-- Add vertical spacing between the buttons -->
+            <form method="POST" action="{{ url_for('login.start_annotation', email=email) }}">
+                <button type="submit" name="action" value="resume" class="submit">Resume Annotation</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,47 @@
+/* styles.css */
+
+body {
+    background-color: #fff;
+    color: #000;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+.box {
+    background-color: black;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+.submit {
+    background-color: #fef2a3;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 15pt;
+    border-radius: 10px;
+}
+
+.submit:hover {
+    background-color: #f2df62;
+}
+
+.button-spacing {
+    margin-top: 40px;
+}

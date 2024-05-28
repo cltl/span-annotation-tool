@@ -1,0 +1,293 @@
+<!-- annotation/annotation.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Annotation</title>
+    <!-- Add bootstrap CSS for flash message styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    
+
+<script>
+    let initialAnnotations = JSON.parse('{{ existing_annotations | tojson | safe }}');
+    console.log("Initial annotations:", initialAnnotations)
+</script>
+
+<script>
+        let activeTag = null;
+        let activeTRIGGER = null;
+        let annotations = [];
+        let isAskingQuestion = false;
+
+        // IF THE USER IS CLICKING ON A TAG THAT IS NOT THE TRIGGER ANSWER,
+        // REMOVE THE TYPE-IN QUESTION BOX
+        function setActiveTag(tag) {
+            activeTag = tag;
+            if ("{{type_in_question }}"!=='None' && tag !== "{{trigger}}") {
+            let questionContainer = document.getElementById("question-container");
+            questionContainer.innerHTML = '';
+            }}
+
+        function findTextNode(parentElement, offset) {
+    const walker = document.createTreeWalker(
+        parentElement,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+
+    let node;
+    let totalLength = 0;
+
+    while (node = walker.nextNode()) {
+        totalLength += node.textContent.length;
+        if (totalLength >= offset) {
+            return {
+                node: node,
+                innerOffset: offset - (totalLength - node.textContent.length)
+            };
+        }
+    }
+
+    return null; // offset not found within the parentElement text nodes
+}
+    
+        document.addEventListener("DOMContentLoaded", function() {
+
+            let containerElement = document.getElementById("annotation-container");
+            let questionElement = containerElement.querySelector('.instruction');
+            let redoButton = document.getElementById("redo-button");
+            redoButton.addEventListener("click", redoAnnotations);
+
+            let textElement = document.getElementById("text");
+
+            // Render initial annotations
+    for (let annotation of initialAnnotations) {
+        let fullText = textElement.innerText;
+        let {node: startNode, innerOffset: startOffset} = findTextNode(textElement, annotation.start);
+let {node: endNode, innerOffset: endOffset} = findTextNode(textElement, annotation.end);
+
+let range = document.createRange();
+range.setStart(startNode, startOffset);
+range.setEnd(endNode, endOffset);
+
+        let span = document.createElement("span");
+        span.className = annotation.tag;
+        span.appendChild(document.createTextNode(annotation.text));
+        range.deleteContents();
+        range.insertNode(span);
+        // STORE THE ANNOTATION IN THE ARRAY
+        annotations.push(annotation);
+    }
+    
+            textElement.addEventListener("mouseup", function() {
+                if (activeTag) {
+                let selection = window.getSelection();
+                let selectedText = selection.toString();
+                //if (selectedText.trim() === '') return; // this removes leading and trailing whitespaces
+
+                let fullText = textElement.innerText;
+                let startOffset = fullText.indexOf(selectedText);
+                let endOffset = startOffset + selectedText.length;
+                
+                // PREVENT SPAN OVERLAPS
+                for (let annotation of annotations) {
+                    if ((startOffset >= annotation.start && startOffset < annotation.end) || 
+                        (endOffset > annotation.start && endOffset <= annotation.end) ||
+                        (startOffset <= annotation.start && endOffset >= annotation.end)) {
+                        alert("Spans should not overlap");
+                        return;
+                    }
+                }
+
+                let range = selection.getRangeAt(0);
+                let span = document.createElement("span");
+                span.className = activeTag;
+                span.appendChild(document.createTextNode(selectedText));
+                range.deleteContents();
+                range.insertNode(span);
+
+                // HERE'S HOW THE ANNOTATION IS STORED
+                let annotation = {
+                    start: startOffset,
+                    end: endOffset,
+                    text: selectedText,
+                    tag: activeTag,
+                    TypedInAnswer: ''
+                };
+                
+                // ASK THE TYPE-IN QUESTION IN CASE OF TRIGGER ANSWER
+                if ("{{type_in_question}}"!=='None' && activeTag === "{{trigger}}") {
+                    activeTRIGGER = annotation;
+                    askQuestion(selectedText);
+                }
+        
+                annotations.push(annotation);
+                }
+            });
+            
+            // SAVE TypedInAnswer FOR THE CURRENT TRIGGER SPAN
+            textElement.addEventListener("click", function(e) {
+                if ("{{type_in_question}}"!=='None' && e.target.className === "{{trigger}}") {
+                    activeTag = 'TypedInAnswer';
+                    activeTRIGGER = annotations.find(annotation => annotation.text === e.target.innerText);
+                    if (!activeTRIGGER.TypedInAnswer) {
+                        activeTRIGGER.TypedInAnswer = '';
+                    }
+                    askQuestion(e.target.innerText); // Ask question again
+                    document.getElementById("TypedInAnswerInput").value = activeTRIGGER.TypedInAnswer; // Set the value of input field to the existing typedInAnswer
+                }
+            });
+        });
+    
+        function askQuestion(selectedText) {
+            if ("{{type_in_question}}" !== 'None') {
+            let questionContainer = document.getElementById("question-container");
+            questionContainer.innerHTML = `
+            <p class="instruction">{{ type_in_question}}</p>
+                <input type="text" id="TypedInAnswerInput" placeholder="Type here" oninput="updateTypedInAnswer(this.value)">
+            `;
+        }}
+    
+        function updateTypedInAnswer(TypedInAnswerValue) {
+            if ("{{type_in_question}}" !== 'None' && activeTRIGGER) {
+                activeTRIGGER.TypedInAnswer = TypedInAnswerValue;
+            }
+        }
+    
+        function setAnnotationsAndSubmit(e) {
+            let triggerWithoutTypedInAnswerExists = annotations.some(annotation => annotation.tag === "{{trigger}}" && !annotation.TypedInAnswer);
+
+            if(triggerWithoutTypedInAnswerExists){
+
+                alert('WARNING: You did not type in a required answer.');
+                let questionContainer = document.getElementById("question-container");
+                questionContainer.innerHTML = '';
+
+                e.preventDefault();
+                return; // Do not proceed with form submission.
+            }
+
+            const annotationInput = document.querySelector('#annotations');
+
+            console.log("Annotations before setting:", annotations);
+            annotationInput.value = JSON.stringify(annotations);
+
+
+            console.log("Annotations after setting:", annotations);
+            e.target.form.submit();
+        }
+
+
+        // THIS HANDLES CASES IN WHICH A USER WANTS TO
+        // CORRECT THE ANNOTATION FOR THE CURRENT TEXT
+        function redoAnnotations() {
+            activeTag = null;
+            activeTRIGGER = null;
+            annotations = [];
+
+            let textElement = document.getElementById("text");
+            let spans = textElement.getElementsByTagName("span");
+
+            // Remove existing spans
+            for (let i = spans.length - 1; i >= 0; i--) {
+            let span = spans[i];
+            let parent = span.parentNode;
+            while (span.firstChild) {
+                parent.insertBefore(span.firstChild, span);
+            }
+            parent.removeChild(span);
+            }
+
+        // Show the question prompt
+        let questionContainer = document.getElementById("question-container");
+        questionContainer.style.display = "block";
+
+        document.getElementById("redo-button").value = "true";
+        
+        // Reset the form submission
+        // Prevent form submission
+        let form = document.getElementById("my-form-id");
+    let formClone = form.cloneNode(true);
+    form.parentNode.replaceChild(formClone, form);
+
+    // Reattach the event listener to the redo button
+    let redoButton = document.getElementById("redo-button");
+    redoButton.addEventListener("click", redoAnnotations);
+    }
+</script>
+    
+    
+    
+</head>
+<body>
+    <div class="navbar">
+        <h1>{{annotation_title}}</h1>
+        <a href="{{ url_for('static', filename=guidelines_file) }}">Guidelines</a>
+
+        
+        
+        <div class="progress-bar">
+            <div id="progress" class="progress-bar-fill" style="width: {{ (current_item/total_items)*100 }}%;"></div>
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    </div>
+
+    <div class="container">
+        <p class="instruction">Below is the text to annotate.</p>
+        <div class="text-block">
+            <p id="text">{{ text }}</p>
+        </div>
+    </div>
+
+
+    <div id="annotation-container" class="container">
+        <p class="instruction">{{ span_question | safe}}</p>
+        {% for tag_short, tag_long, tag_color in tags %}
+        <button class="button-{{ tag_short }}" onclick="setActiveTag('{{ tag_short }}')">{{ tag_long }}</button>
+        {% endfor %}
+    </div>
+
+    <style>
+        {% for tag_short, tag_long, tag_color in tags %}
+        .{{ tag_short }} { background-color: {{ tag_color }}; }
+        .button-{{ tag_short }} { background-color: {{ tag_color }}; }
+        {% endfor %}
+    </style>
+
+    <div class="container">
+    <div id="question-container"></div>
+    </div>
+
+    <form id="my-form-id" method="POST">
+        <input type="hidden" id="annotations" name="annotations">
+        <button type="submit" name="action" value="back" class="submit submit-back" {% if prev_index < 0 %}disabled style="opacity: 0;"{% endif %} onclick="setAnnotationsAndSubmit(event)">Back</button>
+
+
+
+        <!-- previous code, can be deleted -->
+        <!-- {% if prev_index >= 0 %} -->
+        <!-- <button type="submit" name="action" value="back" class="submit submit-back">Back</button> -->
+        <!-- {% endif %} -->
+
+        <button type="submit" name="action" value="next" class="submit submit-next" onclick="setAnnotationsAndSubmit(event)">Next</button>
+        <button type="button" id="redo-button" class="submit submit-redo">Redo</button>
+
+        <img src="/scripts/static/logout.png" id="logout-image">
+        <button type="submit" name="action" value="logout" class="submit submit-logout" onclick="setAnnotationsAndSubmit(event)">Logout</button>
+    </form>
+
+</body>
+</html>
+
+

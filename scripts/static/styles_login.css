@@ -1,0 +1,76 @@
+body {
+    background-color: #fff;
+    color: #000;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-container {
+    text-align: center;
+}
+
+.login-content {
+    background-color: #000;
+    padding: 20px; /* Increase padding to make the box slightly larger */
+    border-radius: 10px;
+    max-width: 360px; /* Add a max-width to contain the form */
+    margin: 0 auto; /* Center the box */
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+
+.login-content.visible {
+    opacity: 1;
+}
+
+.login-app-heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.login-app-name {
+    color: #fef2a3;
+    margin: 0;
+    font-size: 2em; /* "Narrative Analysis" */
+}
+
+.login-app-logo {
+    height: 2.2em; /* Logo height */
+    max-height: 2.2em;
+}
+
+form {
+    margin-top: 20px;
+}
+
+.login-form-group {
+    margin-bottom: 20px;
+}
+
+input[type=email] {
+    padding: 10px;
+    width: 100%;
+    max-width: 300px;
+    display: block;
+    font-size: 1.2em; 
+}
+
+button {
+    padding: 5px 20px; 
+    background-color: #fef2a3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em; 
+    width: 100%;
+    max-width: 200px;
+}

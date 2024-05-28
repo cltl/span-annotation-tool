@@ -1,0 +1,135 @@
+/* -----------------------------------
+   NAVBAR STYLES
+----------------------------------- */
+.navbar { /* Bar on top */
+    background-color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+
+.navbar h1 { /* Annotation Title */
+    color: #fef2a3;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.navbar a { /* Guidelines */
+    color: white;
+    font-size: 22px;
+    /* text-decoration: none;*/ /* uncomment to remove underline */
+    margin-left: 30%; 
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.progress-bar-fill {
+    display: block;
+    height: 15px;
+    background-color: #fef2a3;
+    border-radius: 5px;
+    transition: width 0.5s;
+}
+
+.flash-messages {
+    color: red;
+    /* Add any other styling you want for the messages */
+}
+
+/* -----------------------------------
+   ANNOTATION CONTAINER AND TAG STYLES
+----------------------------------- */
+.container {
+    width: 50%;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+
+
+.text-block {
+    border: 1px solid #000000;
+    background-color: #fefdfa;
+    padding: 30px; /* add more space inside the box */
+    margin-bottom: 20px; /* add space below the box */
+    font-size: 18px;
+}
+
+p {
+    font-size: 20px;
+}
+
+p.instruction {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* ACTIONS */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+}
+
+.submit {
+    background-color: black;
+    color: #fef2a3;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-back {
+    position: fixed;
+    left: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.submit-next {
+    position: fixed;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.submit-logout {
+    background-color: transparent;
+    color: black;
+    position: fixed;
+    font-weight: bold;
+    bottom: 20px;
+    right: 10px;
+}
+
+.submit-redo {
+    background-color: black;
+    color: #fef2a3;
+    position: fixed;
+    right: 5%;
+    top: 60%; /* Adjust this to move the button up or down */
+    transform: translateY(-50%);
+}
+
+/* -----------------------------------
+   IMAGES
+----------------------------------- */
+#logout-image {
+    position: fixed;
+    bottom: 30px; /* Adjust this value as needed */
+    right: 90px;
+    width: 25px; 
+    height: 25px;
+}
