@@ -45,10 +45,14 @@ $ pip3 install Flask-Caching
 $ pip3 install pandas
 ```
 
-3. Put your own annotation guidelines (Annotation_guidelines.pdf) in `./scripts/static`. 
+
+
+## Using the interface
+
+1. Put your own annotation guidelines (Annotation_guidelines.pdf) in `./scripts/static`. 
 Put your data in the folder `./input`: this file must be in .tsv format, and have a column with an identificator for each text (e.g., a number).
 
-4. Change the `config.ini` file according to your needs:
+2. Change the `config.ini` file according to your needs:
 
 | [general]   |   |
 | ---------- | ---------- |
@@ -74,16 +78,12 @@ Put your data in the folder `./input`: this file must be in .tsv format, and hav
 |trigger | The tag abbreviation that triggers the type-in question. If the type-in question is unnecessary, set to `None`.|
 |type_in_question | This question is asked to have the annotators fill in a text input field. As opposed to span_question, this one is optional. If you don't need it, set to `None`.|
 
-
-
-## Using the interface
-
-1. Run the app
+3. Run the app
 ```
 $ python3 app.py
 ```
 
-2. Open a browser (if running local, open your browser and go to
+4. Open a browser (if running local, open your browser and go to
 [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or [http://localhost:5000](http://localhost:5000))
 and annotate!
 
