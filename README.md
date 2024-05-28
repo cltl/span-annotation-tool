@@ -1,5 +1,5 @@
 <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-  <h1 style="flex: 1;">Span Annotation Interface<br>
+  <h1 style="flex: 1;">Span Annotation<br>
   </h1>
 </div>
 
